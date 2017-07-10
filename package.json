@@ -1,0 +1,32 @@
+{
+  "name": "vendingmachine",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "NODE_ENV=test mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidTurkGT/vendingMachine.git"
+  },
+  "author": "David Turk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidTurkGT/vendingMachine/issues"
+  },
+  "homepage": "https://github.com/DavidTurkGT/vendingMachine#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "express-validator": "^3.2.1",
+    "mongodb": "^2.2.30",
+    "mongoose": "^4.10.8",
+    "morgan": "^1.8.2",
+    "path": "^0.12.7"
+  }
+}

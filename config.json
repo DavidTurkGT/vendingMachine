@@ -1,0 +1,8 @@
+{
+  "development": {
+    "mongoURL": "mongodb://127.0.0.1:27017/vending_development"
+  },
+  "test": {
+    "mongoURL": "mongodb://127.0.0.1:27017/vending_test"
+  }
+}

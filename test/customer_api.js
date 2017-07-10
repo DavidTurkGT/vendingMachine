@@ -1,21 +1,58 @@
 const assert = require('assert');
 const mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 const config = require('../config')[process.env.NODE_ENV || "test"];
+const request = require('supertest');
+const Item = require('../models/item');
+const Purchase = require('../models/purchase');
 const app = require('../app');
 
 before("Setting up...", (done) =>{
+  mongoose.connect(config.mongoURL)
+  .then( () =>{
+  let twix = {
+    description: "Twix",
+    cost: 105,
+    quantity: 19
+  },
+  snickers = {
+    description: "Snickers",
+    cost: 95,
+    quantity: 3
+  },
+  chips = {
+    description: "Lays",
+    cost: 125,
+    quantity: 13
+  };
+  Item.insertMany([twix, snickers, chips])
+  .then( (data) => {
   done();
+  })})
 });
 
 after("Cleaning up...", (done) => {
-  done();
+  mongoose.connection.dropDatabase(done);
 });
 
 describe("A customer", () => {
 
   it("should be able to get a list of the current items, their costs, and quantities of those items", (done) =>{
-    assert(false);
-    done();
+    request(app)
+      .get("/api/customer/items")
+      .expect(200)
+      .expect('Content-Type','application/json; charset=utf-8')
+      .expect( (res) =>{
+        let items = res.body;
+        assert(items);
+        items.forEach( (item) => {
+          assert(item);
+          assert.notEqual(item.description, "");
+          assert(item.cost);
+          assert(item.quantity);
+        });
+      })
+      .end(done);
   });
 
   it("should be able to buy an item using money", (done) => {
@@ -29,7 +66,10 @@ describe("A customer", () => {
   });
 
   it("should not be able to buy items that are not in the machine, but instead get an error", (done) => {
-    assert(false);
+    request(app)
+      .post("/api/customer/items/20/purchases")
+      .expect(404)
+      .end(done);
     done();
   });
 

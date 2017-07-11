@@ -13,12 +13,40 @@ router.get('/items', async (req, res) => {
 
 router.post('/items/:itemID/purchases', async (req, res) => {
   //TODO Purchase an item
-  let item = await Item.findbyId(req.params.itemID)
+  let customerMoney = req.body.money;
+  let items = await Item.find({});
+  console.log("Items in the db: ", items);
+  console.log("Money received: ", customerMoney);
+  console.log("Using ID: ", req.params.itemID);
+  let item = await Item.find({ _id: req.params.itemID })
     .catch( (err) => res.status(400).send("Error: bad request"))
-  if(!item) res.status(404).send("Error: no such item");
-  item.quantity--;
-  item = await item.save();
-  res.status(200).send("Successfully bought: " + item.description + ". There are now " + item.quantity + " left");
+  if(!item) {
+    res.status(404).send("Error: no such item");
+  }
+  else if( customerMoney > item.cost ){
+    item.quantity--;
+    item = await item.save();
+    // res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
+      "data": {
+        "message": "Successfully bought: " + item.description,
+        "money given": customerMoney,
+        "cost": item.cost,
+        "change": customerMoney - item.cost,
+        "quantity": item.quantity
+      }
+    });
+  }
+  else{
+    // res.setHeader('Content-Type','application/json');
+    res.status(400).json({
+      "data": {
+        "Message": "Error: not enough money",
+        "Money Given": customerMoney,
+        "Cost": item.cost
+      }
+    })
+  }
 });
 
 module.exports = router;

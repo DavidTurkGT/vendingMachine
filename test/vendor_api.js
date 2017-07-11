@@ -129,25 +129,23 @@ describe("A vendor", () => {
       cost: 180,
       quantity: 19
     };
-    Item.create(newItem).then( (item) => {
-      request(app)
-        .post("/api/vendor/items")
-        .send(newItem)
-        .expect(200)
-        .expect('Content-Type','application/json; charset=utf-8')
-        .expect( (res) => {
-          assert(res, "No response received. Received: " + res);
-          assert(res.body, "No response body. Received: " + res.body);
-          assert(res.body.item, "No item received. Recevied: " + res.body.item);
-          assert.equal(res.body.item.description, "Skittles", "Description is not 'Skittles'. Received: " + res.body.item.description);
-          assert.equal(res.body.item.cost, 180, "Cost is not 180. Received: ", res.body.item.cost);
-          assert.equal(res.body.item.quantity, 19, "Qunatity is not 19. Received: ", res.body.item.quantity);
-        })
-        .end( (err, res) => {
-          if(err) done(err);
-          else done();
-        })
+    request(app)
+      .post("/api/vendor/items")
+      .send(newItem)
+      .expect(200)
+      .expect('Content-Type','application/json; charset=utf-8')
+      .expect( (res) => {
+        assert(res, "No response received. Received: " + res);
+        assert(res.body, "No response body. Received: " + res.body);
+        assert(res.body.item, "No item received. Recevied: " + res.body.item);
+        assert.equal(res.body.item.description, "Skittles", "Description is not 'Skittles'. Received: " + res.body.item.description);
+        assert.equal(res.body.item.cost, 180, "Cost is not 180. Received: ", res.body.item.cost);
+        assert.equal(res.body.item.quantity, 19, "Qunatity is not 19. Received: ", res.body.item.quantity);
+      })
+      .end( (err, res) => {
+        if(err) done(err);
+        else done();
+      })
     })
-  });
 
 });

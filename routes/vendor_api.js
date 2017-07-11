@@ -24,12 +24,41 @@ router.get("/money", async (req, res) => {
 
 router.post("/items", (req, res) => {
   //TODO Add a new item not previously exisiting in the machine
-  res.send("Add a new item not previously exisiting in the machine");
+  Item.findOne({ description: req.description})
+  .catch( (err) => res.status(400).send("Bad request: "+err) )
+  .then( (item) => {
+    if(item) res.status(401).send("Item already exisits");
+    else{
+      let newItem = {
+        description: req.body.description,
+        cost: req.body.cost,
+        quantity: req.body.quantity
+      };
+      Item.create(newItem).then( (newItem) => {
+        res.setHeader('Content-Type','application/json');
+        res.status(200).json({"item": newItem});
+      })
+      .catch( (err) => res.status(500).send("Internal server error") );
+    }
+  })
+
 });
 
 router.put("/items/:itemID", (req, res) => {
-  //TODO Update item quantity, description, and cost
-  res.send("Update item quantity, description, and cost");
+  //Update item quantity, description, and cost
+  Item.findById(req.params.itemID).then( (item) => {
+    if(!item) res.status(404).send("Item not found");
+    item.description = req.body.description || item.description;
+    item.cost = req.body.cost || item.cost;
+    item.quantity = req.body.quantity || item.quantity;
+    item.save()
+    .then( (item) => {
+      res.setHeader('Content-Type','application/json');
+      res.status(200).json({"item": item});
+    })
+    .catch( (err) => res.status(500).send("Internal server error"));
+  })
+  .catch( (err) => res.status(400).send("Bad request: "+err) );
 });
 
 module.exports = router;

@@ -70,7 +70,8 @@ describe("A customer", () => {
       .expect(200)
       .expect('Content-Type','application/json; charset=utf-8')
       .expect( (res) => {
-        assert.equal(res.data.moneyReceived, 200, "Money received was not 200");
+        assert.equal(res.body.data.quantity + 1, 19, "Quantity was not reduced by one");
+        assert.equal(res.body.data.moneyReceived, 200, "Money received was not 200");
       })
       .end( (err, res) => {
         if(err) done(err);
@@ -86,9 +87,12 @@ describe("A customer", () => {
       .expect(200)
       .expect('Content-Type','application/json; charset=utf-8')
       .expect( (res) => {
-        assert.equal(res.data.moneyReceived, 200, "Money was not 200");
-        assert.equal(res.data.cost, 105, "Cost was not 105");
-        assert.equal(res.data.change, 95, "Change was not 95");
+        assert(res, "No response given");
+        assert(res.body, "No response body");
+        assert(res.body.data, "No data received");
+        assert.equal(res.body.data.moneyReceived, 200, "Money was not 200");
+        assert.equal(res.body.data.cost, 105, "Cost was not 105");
+        assert.equal(res.body.data.change, 95, "Change was not 95");
       })
       .end( (err, res) => {
         if(err) done(err);

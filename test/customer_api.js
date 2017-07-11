@@ -48,42 +48,65 @@ describe("A customer", () => {
       .expect('Content-Type','application/json; charset=utf-8')
       .expect( (res) =>{
         let items = res.body;
-        assert(items);
+        assert(items, "Array of items does not exist");
         items.forEach( (item) => {
-          assert(item);
-          assert.notEqual(item.description, "");
-          assert(item.cost);
-          assert(item.quantity);
+          assert(item, "Item does not exist");
+          assert.notEqual(item.description, "", "Item description is blank");
+          assert(item.cost, "Item has no cost");
+          assert(item.quantity, "Item has no qunatity");
         });
       })
-      .end(done);
+      .end( (err, res) => {
+        if(err) done(err);
+        else done();
+      });
   });
 
   it("should be able to buy an item using money", (done) => {
+    let url = "/api/customer/items/"+itemID+"/purchases";
     request(app)
-      .post("/api/customer/items/"+itemID+"/purchases")
+      .post(url)
+      .send({"money": 200})
       .expect(200)
       .expect('Content-Type','application/json; charset=utf-8')
       .expect( (res) => {
-        assert(res.body.data.change >= 0);
-        assert.isEqual(res.body.data.change, 200-105);
-        assert(res.body.data.quantity > 0);
+        assert.equal(res.data.moneyReceived, 200, "Money received was not 200");
       })
-      .end(done);
+      .end( (err, res) => {
+        if(err) done(err);
+        else done();
+      });
   });
 
   it("should be able to buy an item, paying more than the item is worth (imagine putting a dollar in a machine for a 65-cent item) and get correct change. This change is just an amount, not the actual coins.", (done) => {
-      assert(false);
-      done();
+    let url = "/api/customer/items/"+itemID+"/purchases";
+    request(app)
+      .post(url)
+      .send({"money": 200})
+      .expect(200)
+      .expect('Content-Type','application/json; charset=utf-8')
+      .expect( (res) => {
+        assert.equal(res.data.moneyReceived, 200, "Money was not 200");
+        assert.equal(res.data.cost, 105, "Cost was not 105");
+        assert.equal(res.data.change, 95, "Change was not 95");
+      })
+      .end( (err, res) => {
+        if(err) done(err);
+        else done();
+      });
   });
 
   it("should not be able to buy items that are not in the machine, but instead get an error", (done) => {
+    let url = "/api/customer/items/20/purchases";
     request(app)
-      .post("/api/customer/items/20/purchases")
+      .post(url)
       .expect( (res) => {
-        assert(res.status != 200);
+        assert(res.status !== 200, "Status was 200 instead of not 200");
       })
-      .end(done);
+      .end( (err, res) => {
+        if(err) done(err);
+        else done();
+      });
   });
 
 });

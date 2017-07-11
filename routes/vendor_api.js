@@ -5,7 +5,7 @@ const Purchase    = require('../models/purchase');
 ////////////////////////////////////////////////////////////////////////////////
 
 router.get('/purchases', async (req, res) => {
-  //TODO Get a list of all puchases with their item and date/time
+  //Get a list of all puchases with their item and date/time
   let purchases = await Purchase.find({})
     .catch( (err) => res.status(500).send("Internal server error"));
   res.setHeader('Content-Type','application/json; charset=utf-8');
